@@ -760,8 +760,8 @@ html.rel-on,html.rel-on body{overflow:hidden}
       var c=cfgSync(), st={ok:"Conectada — cada registro é salvo na planilha.",erro:"Sem conexão com a planilha agora. Os registros ficam no aparelho e são enviados depois.","…":"Conectando…",off:"Não conectada. Os registros ficam só neste aparelho."}[estadoSync];
       h+='<div class="panel"><h3><span class="pi teal">'+ico("chart",true)+'</span>Planilha Google</h3><div class="cap">'+st+"</div>";
       if(!c){
-        h+='<div class="field"><label for="sync-url">Endereço do script</label><input id="sync-url" placeholder="https://script.google.com/macros/s/…/exec" value="'+esc(ui.syncUrl||"")+'" autocomplete="off" autocapitalize="off"></div>'+
-          '<div class="field"><label for="sync-key">Chave</label><input id="sync-key" value="'+esc(ui.syncKey||"")+'" autocomplete="off" autocapitalize="off"></div>'+
+        h+='<div class="field"><label for="sync-url">Link de conexão ou endereço do script</label><input id="sync-url" placeholder="cole aqui o link que você recebeu" value="'+esc(ui.syncUrl||"")+'" autocomplete="off" autocapitalize="off"></div>'+
+          '<div class="field"><label for="sync-key">Chave (não precisa se colou o link)</label><input id="sync-key" value="'+esc(ui.syncKey||"")+'" autocomplete="off" autocapitalize="off"></div>'+
           '<button class="btn" data-conectar="1">'+ico("up")+" Conectar</button>";
       } else {
         h+='<button class="btn soft" data-sync-agora="1">'+ico("up")+" Sincronizar agora</button>"+
@@ -975,6 +975,8 @@ html.rel-on,html.rel-on body{overflow:hidden}
     if(acha(ev.target,"data-copiar")) return copiar();
     if(acha(ev.target,"data-exportar")) return exportar();
     if(acha(ev.target,"data-conectar")){
+      var lk=(ui.syncUrl||"").match(/sync=([^&]+)&k=([^&\s]+)/);
+      if(lk){ ui.syncUrl=decodeURIComponent(lk[1]); ui.syncKey=decodeURIComponent(lk[2]); }
       if(!/^https:\/\/script\.google\.com\//.test(ui.syncUrl||"")||!ui.syncKey) return toast("Confira o endereço e a chave");
       try{ localStorage.setItem(SYNC,JSON.stringify({url:ui.syncUrl,token:ui.syncKey})); }catch(e){}
       estadoSync="…"; render();
