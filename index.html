@@ -372,9 +372,47 @@ html.rel-on,html.rel-on body{overflow:hidden}
   var remoto = typeof window.storage!=="undefined" && window.storage;
   var salvando=null;
 
+  /* ═══ planilha Google (opcional) ═══
+     Endereço e chave ficam só neste aparelho, nunca no código.
+     Atalho de configuração: link com #sync=<endereço>&k=<chave> */
+  var SYNC="caderneta.sync";
+  (function(){
+    var m=location.hash.match(/sync=([^&]+)&k=([^&]+)/);
+    if(m){ try{ localStorage.setItem(SYNC,JSON.stringify({url:decodeURIComponent(m[1]),token:decodeURIComponent(m[2])})); }catch(e){} }
+  })();
+  function cfgSync(){ try{ var c=JSON.parse(localStorage.getItem(SYNC)); return c&&c.url&&c.token?c:null; }catch(e){ return null; } }
+  function puxarPlanilha(c){
+    return fetch(c.url+(c.url.indexOf("?")<0?"?":"&")+"token="+encodeURIComponent(c.token),{cache:"no-store"})
+      .then(function(r){ return r.json(); })
+      .then(function(j){ if(!j.ok) throw new Error(j.erro||"planilha"); return j.db; });
+  }
+  function enviarPlanilha(c){
+    return fetch(c.url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({token:c.token,db:db})})
+      .then(function(r){ return r.json(); })
+      .then(function(j){ if(!j.ok) throw new Error(j.erro||"planilha"); });
+  }
+  /* junta os dias dos dois lados; no mesmo dia vale o que está no aparelho */
+  function juntar(local,rem){
+    var o={ nome:(local&&local.nome)||(rem&&rem.nome)||"",
+      limites:Object.assign({},PADRAO,(rem&&rem.limites)||{},(local&&local.limites)||{}), dias:{} };
+    [rem,local].forEach(function(x){ if(x&&x.dias) Object.keys(x.dias).forEach(function(k){ o.dias[k]=x.dias[k]; }); });
+    return o;
+  }
+  function sincronizar(local){
+    var c=cfgSync(); if(!c) return Promise.resolve(false);
+    return puxarPlanilha(c).then(function(rem){
+      var m=juntar(local,rem); aplicar(m);
+      try{ localStorage.setItem(KEY,JSON.stringify(db)); }catch(e){}
+      estadoSync="ok";
+      if(JSON.stringify(m.dias)!==JSON.stringify((rem&&rem.dias)||{})||!rem) return enviarPlanilha(c).then(function(){ return true; });
+      return true;
+    }).catch(function(){ estadoSync="erro"; return false; });
+  }
+  var estadoSync=cfgSync()?"…":"off";
+
   function carregar(pronto){
     var local=null; try{ local=JSON.parse(localStorage.getItem(KEY)); }catch(e){}
-    if(semApi){ aplicar(local); pronto(); return; }
+    if(semApi){ aplicar(local); sincronizar(local).then(function(){ pronto(); }); return; }
     fetch(API,{cache:"no-store"}).then(function(r){
       if(!r.ok) throw new Error("api "+r.status);
       return r.json();
@@ -403,7 +441,14 @@ html.rel-on,html.rel-on body{overflow:hidden}
     try{ localStorage.setItem(KEY,JSON.stringify(db)); }catch(e){}
     if(remoto){ try{ window.storage.set(KEY,JSON.stringify(db)); }catch(e){} }
     if(salvando) clearTimeout(salvando);
-    if(semApi) return;
+    if(semApi){
+      var c=cfgSync(); if(!c) return;
+      salvando=setTimeout(function(){
+        enviarPlanilha(c).then(function(){ if(estadoSync!=="ok"){ estadoSync="ok"; if(ui.aba==="ajustes") render(); } },
+          function(){ estadoSync="erro"; if(ui.aba==="ajustes") render(); });
+      },700);
+      return;
+    }
     var enviar=function(){
       fetch(API,{
         method:"PUT",
@@ -711,8 +756,21 @@ html.rel-on,html.rel-on body{overflow:hidden}
       '<div class="cap">Usados para destacar os valores e no relatório.</div>'+
       '<div class="three field">'+campo("hipo","hipoglicemia")+campo("pre","jejum e antes")+campo("pos","2 h depois")+"</div>"+
       '<p class="hintline">Vêm prontos com a referência para quem não tem diagnóstico: jejum abaixo de 100 e 140 duas horas depois de comer. Com diabetes em tratamento, a meta usual é 80–130 em jejum e abaixo de 180 duas horas depois. Na pressão, a referência para medida feita em casa é 130/80.</p></div>';
+    if(semApi){
+      var c=cfgSync(), st={ok:"Conectada — cada registro é salvo na planilha.",erro:"Sem conexão com a planilha agora. Os registros ficam no aparelho e são enviados depois.","…":"Conectando…",off:"Não conectada. Os registros ficam só neste aparelho."}[estadoSync];
+      h+='<div class="panel"><h3><span class="pi teal">'+ico("chart",true)+'</span>Planilha Google</h3><div class="cap">'+st+"</div>";
+      if(!c){
+        h+='<div class="field"><label for="sync-url">Endereço do script</label><input id="sync-url" placeholder="https://script.google.com/macros/s/…/exec" value="'+esc(ui.syncUrl||"")+'" autocomplete="off" autocapitalize="off"></div>'+
+          '<div class="field"><label for="sync-key">Chave</label><input id="sync-key" value="'+esc(ui.syncKey||"")+'" autocomplete="off" autocapitalize="off"></div>'+
+          '<button class="btn" data-conectar="1">'+ico("up")+" Conectar</button>";
+      } else {
+        h+='<button class="btn soft" data-sync-agora="1">'+ico("up")+" Sincronizar agora</button>"+
+          '<button class="btn soft" data-desconectar="1">'+ico("x")+" Desconectar</button>";
+      }
+      h+="</div>";
+    }
     h+='<div class="panel"><h3><span class="pi ink">'+ico("down",true)+'</span>Cópia de segurança</h3>'+
-      '<div class="cap">Os registros ficam neste aparelho, neste navegador.</div>'+
+      '<div class="cap">'+(cfgSync()?"Além da planilha, dá para guardar um arquivo.":"Os registros ficam neste aparelho, neste navegador.")+'</div>'+
       '<button class="btn soft" data-exportar="1">'+ico("down")+" Baixar meus dados</button>"+
       '<button class="btn soft" data-importar="1">'+ico("up")+" Restaurar de um arquivo</button>"+
       '<input type="file" id="arquivo" accept="application/json,.json" style="display:none">'+
@@ -916,6 +974,25 @@ html.rel-on,html.rel-on body{overflow:hidden}
     if(acha(ev.target,"data-rel-fechar")) return fecharRelatorio();
     if(acha(ev.target,"data-copiar")) return copiar();
     if(acha(ev.target,"data-exportar")) return exportar();
+    if(acha(ev.target,"data-conectar")){
+      if(!/^https:\/\/script\.google\.com\//.test(ui.syncUrl||"")||!ui.syncKey) return toast("Confira o endereço e a chave");
+      try{ localStorage.setItem(SYNC,JSON.stringify({url:ui.syncUrl,token:ui.syncKey})); }catch(e){}
+      estadoSync="…"; render();
+      sincronizar(db).then(function(ok){
+        if(!ok){ try{ localStorage.removeItem(SYNC); }catch(e){} estadoSync="off"; render(); return toast("Não conectou — confira endereço e chave"); }
+        ui.syncUrl=ui.syncKey=""; render(); toast("Planilha conectada");
+      });
+      return;
+    }
+    if(acha(ev.target,"data-sync-agora")){
+      estadoSync="…"; render();
+      sincronizar(db).then(function(ok){ render(); toast(ok?"Sincronizado":"Sem conexão com a planilha"); });
+      return;
+    }
+    if(acha(ev.target,"data-desconectar")){
+      try{ localStorage.removeItem(SYNC); }catch(e){}
+      estadoSync="off"; render(); toast("Planilha desconectada"); return;
+    }
     if(acha(ev.target,"data-importar")){ document.getElementById("arquivo").click(); return; }
   });
 
@@ -981,6 +1058,8 @@ html.rel-on,html.rel-on body{overflow:hidden}
     var el=ev.target;
     if(el.id==="nota"){ dia(ui.data,true).nota=el.value; salvar(); return; }
     if(el.id==="nome"){ db.nome=el.value; salvar(); return; }
+    if(el.id==="sync-url"){ ui.syncUrl=el.value.trim(); return; }
+    if(el.id==="sync-key"){ ui.syncKey=el.value.trim(); return; }
     if(el.getAttribute&&el.getAttribute("data-lim")){
       var v=el.value.replace(/\D/g,"").slice(0,3); el.value=v;
       db.limites[el.getAttribute("data-lim")]=v===""?0:+v; salvar();
