@@ -286,26 +286,60 @@ table.log tr:last-child td{border-bottom:0}
 .ph.lg{font-size:20px}
 
 #print{display:none}
+#print.on{display:block;position:fixed;inset:0;z-index:200;overflow:auto;background:#E9ECF2;-webkit-overflow-scrolling:touch}
+html.rel-on,html.rel-on body{overflow:hidden}
+#print .rbar{position:sticky;top:0;z-index:2;display:flex;gap:10px;align-items:center;justify-content:space-between;
+  padding:max(10px,env(safe-area-inset-top)) 16px 10px;background:rgba(255,255,255,.94);border-bottom:1px solid #DDE1E8;font-family:var(--font)}
+#print .rbar b{font-size:16px}
+#print .rbar div{display:flex;gap:8px}
+#print .rbar button{min-height:44px;padding:0 16px;border-radius:14px;font-weight:600;font-size:15px;background:#EEF1F6;color:#111827;display:flex;align-items:center;gap:6px}
+#print .rbar button.pri{background:#2D5BFF;color:#fff}
+#print .pg{background:#fff;color:#000;max-width:210mm;margin:16px auto 40px;padding:12mm 12mm 14mm;box-shadow:0 2px 14px rgba(17,24,39,.12);
+  font-family:var(--font);font-size:9.5pt;line-height:1.35}
+#print .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+#print .ph-head{display:flex;justify-content:space-between;align-items:flex-end;gap:6mm;border-bottom:1.4pt solid #000;padding-bottom:2.5mm}
+#print h1{font-size:17pt;font-weight:700;margin:0;letter-spacing:-.2pt}
+#print .sub{font-size:9pt;color:#333;margin-top:1mm}
+#print .meta{font-size:8.5pt;color:#333;text-align:right;line-height:1.5;white-space:nowrap}
+#print h2{font-size:10.5pt;font-weight:700;margin:6mm 0 2mm;padding-bottom:1mm;border-bottom:.6pt solid #000;break-after:avoid;page-break-after:avoid}
+#print h3{font-size:8.5pt;font-weight:700;margin:3mm 0 1mm;text-transform:uppercase;letter-spacing:.4pt;color:#333}
+#print .duo{display:grid;grid-template-columns:1fr 1fr;gap:6mm}
+#print table{width:100%;border-collapse:collapse;font-size:8.5pt;font-variant-numeric:tabular-nums}
+#print th{text-align:right;font-weight:600;font-size:7.5pt;color:#333;border-bottom:.9pt solid #000;padding:1.3mm 1.2mm;vertical-align:bottom;line-height:1.2}
+#print td{text-align:right;padding:1.1mm 1.2mm;border-bottom:.3pt solid #C8C8C8;vertical-align:top}
+#print th.l,#print td.l{text-align:left}
+#print tr{break-inside:avoid;page-break-inside:avoid}
+#print tr.nd td{border-top:.7pt solid #777}
+#print td .h{display:block;font-size:6.8pt;color:#666;font-weight:400}
+#print td.dt{white-space:nowrap;font-weight:600}
+#print td.dt span{display:block;font-weight:400;font-size:7pt;color:#666}
+#print .mk{color:#C8102E;font-weight:700;text-decoration:underline;text-underline-offset:1.5pt}
+#print .zz{color:#999}
+#print .chart{border:.4pt solid #CCC;padding:2mm 2mm 0;break-inside:avoid;page-break-inside:avoid}
+#print .chart .cap{font-size:7.5pt;color:#444;padding:1mm 0 1.5mm}
+#print svg{width:100%;height:auto;display:block}
+#print .notas td{text-align:left}
+#print .fo{font-size:7.5pt;color:#333;margin-top:5mm;line-height:1.5;border-top:.4pt solid #999;padding-top:2mm}
+#print .obs{margin-top:5mm;break-inside:avoid;page-break-inside:avoid}
+#print .obs div{border-bottom:.4pt solid #999;height:7mm}
+@media (max-width:640px){
+  #print .pg{margin:0;box-shadow:none;padding:16px 16px 28px;max-width:none}
+  #print .duo{grid-template-columns:1fr}
+  #print .ph-head{flex-direction:column;align-items:flex-start;gap:2mm}
+  #print .meta{text-align:left;white-space:normal}
+  #print .rbar b{display:none}
+  #print .duo>div{min-width:0}
+}
 @media print{
-  @page{size:A4;margin:14mm}
-  html,body{background:#fff}
-  .shell,.scrim,.toast,.bar{display:none!important}
-  #print{display:block;font-size:9.5pt;color:#000}
-  #print .ph-head{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1.2pt solid #000;padding-bottom:2mm}
-  #print h1{font-size:16pt;font-weight:700;margin:0}
-  #print .ph-head div{font-size:8.5pt;color:#333;text-align:right}
-  #print h2{font-size:9pt;margin:6mm 0 1mm;border-bottom:.5pt solid #000;padding-bottom:1mm}
-  #print .g3{display:flex;gap:9mm;padding:2mm 0 1mm}
-  #print .g3 .k{font-size:8pt;color:#444}
-  #print .g3 .v{font-size:17pt;font-weight:700}
-  #print table{width:100%;border-collapse:collapse;font-size:8.5pt}
-  #print th{text-align:right;font-weight:500;font-size:7.5pt;color:#444;border-bottom:.8pt solid #000;padding:1.6mm 0}
-  #print th:first-child{text-align:left}
-  #print td{text-align:right;padding:1.5mm 0;border-bottom:.3pt solid #bbb;font-variant-numeric:tabular-nums}
-  #print td:first-child{text-align:left;color:#444}
-  #print .mk{color:#000;font-weight:700;border-bottom:.8pt solid #000}
-  #print .fo{font-size:7.5pt;color:#444;margin-top:5mm;line-height:1.5}
-  #print svg{width:100%;height:auto;max-height:52mm}
+  @page{size:A4;margin:12mm 11mm 13mm}
+  html,body{background:#fff!important;overflow:visible!important}
+  .shell,.scrim,.toast,.bar,#tabbar{display:none!important}
+  #print,#print.on{display:block!important;position:static;overflow:visible;background:#fff}
+  #print .rbar{display:none!important}
+  #print .pg{margin:0;padding:0;box-shadow:none;max-width:none}
+  #print .tw{overflow:visible}
+  #print .duo{grid-template-columns:1fr 1fr}
+  #print *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
 </head>
@@ -875,6 +909,8 @@ table.log tr:last-child td{border-bottom:0}
     }
     if(acha(ev.target,"data-guardar")&&f) return guardar();
     if(acha(ev.target,"data-imprimir")) return imprimir();
+    if(acha(ev.target,"data-rel-imprimir")){ window.print(); return; }
+    if(acha(ev.target,"data-rel-fechar")) return fecharRelatorio();
     if(acha(ev.target,"data-copiar")) return copiar();
     if(acha(ev.target,"data-exportar")) return exportar();
     if(acha(ev.target,"data-importar")){ document.getElementById("arquivo").click(); return; }
@@ -962,6 +998,7 @@ table.log tr:last-child td{border-bottom:0}
     fr.readAsText(ev.target.files[0]);
   });
   document.addEventListener("keydown", function(ev){
+    if(ev.key==="Escape"&&document.getElementById("print").classList.contains("on")) return fecharRelatorio();
     var f=ui.folha; if(!f||!f.id) return;
     if(/^[0-9]$/.test(ev.key)){ tecla(ev.key); }
     else if(ev.key==="Backspace"){ tecla("apagar"); }
@@ -1009,31 +1046,125 @@ table.log tr:last-child td{border-bottom:0}
     try{ document.execCommand("copy"); toast("Texto copiado"); }catch(e){ toast("Não consegui copiar"); }
     document.body.removeChild(ta);
   }
-  function imprimir(){
-    var chaves=ultimos(ui.periodo), e=estat(chaves);
-    function b(k,v){ return '<div><div class="k">'+k+'</div><div class="v">'+(v==null?"—":v)+"</div></div>"; }
-    var h='<div class="ph-head"><h1>'+esc(db.nome||"Registro em casa")+"</h1><div>pressão e glicemia medidas em casa<br>"+
-      curto(chaves[0])+" a "+curto(chaves[chaves.length-1])+" · "+e.dias+" dias com registro</div></div>";
-    h+="<h2>Pressão arterial (mmHg)</h2>"+graficoPA(chaves,true)+'<div class="g3">'+
-      b("média manhã", e.pa.manha?e.pa.manha.join("/"):null)+
-      b("média noite", e.pa.noite?e.pa.noite.join("/"):null)+
-      b("média geral", e.pa.geral?e.pa.geral.join("/"):null)+
-      b("em 130/80 ou acima", e.pa.total?e.pa.fora+" de "+e.pa.total:null)+"</div>";
-    h+="<h2>Glicemia capilar (mg/dL)</h2>"+graficoGL(chaves,true)+'<div class="g3">'+
-      b("jejum", e.gl.jejum)+b("antes de comer", e.gl.pre)+b("2 h depois", e.gl.pos)+
-      b("menor / maior", e.gl.min==null?null:e.gl.min+" / "+e.gl.max)+"</div>";
-    h+="<h2>Dia a dia</h2>"+tabela(chaves);
+  function dataLonga(k){ var d=deIso(k); return pad(d.getDate())+"/"+pad(d.getMonth()+1)+"/"+d.getFullYear(); }
+  function relatorio(){
+    var chaves=ultimos(ui.periodo), e=estat(chaves), lim=db.limites;
+    var comDados=chaves.filter(temAlgo);
+    function v0(v){ return v==null?'<span class="zz">—</span>':v; }
+    function marcaPA(s,d){ var st=stPA(s,d), t=s+"/"+d; return st?'<span class="mk">'+t+(st==="bad"?" ↑↑":" ↑")+"</span>":t; }
+    function marcaGL(v,tipo){ var st=stGL(v,tipo); if(!st) return String(v);
+      return '<span class="mk">'+v+(v<lim.hipo?" ↓":" ↑")+"</span>"; }
+    function mm(xs){ return xs.length?Math.min.apply(null,xs)+"–"+Math.max.apply(null,xs):null; }
+
+    var agora_=new Date();
+    var h='<div class="ph-head"><div><h1>'+esc(db.nome||"Paciente")+"</h1>"+
+      '<div class="sub">Registro domiciliar de pressão arterial e glicemia capilar</div></div>'+
+      '<div class="meta">Período: <b>'+dataLonga(chaves[0])+" a "+dataLonga(chaves[chaves.length-1])+"</b><br>"+
+      comDados.length+" de "+chaves.length+" dias com registro<br>Gerado em "+dataLonga(iso(agora_))+" às "+agora()+"</div></div>";
+
+    /* ── resumo pressão ── */
+    var linhasPA=[], todas={manha:[],noite:[]};
+    chaves.forEach(function(k){ PRESSAO.forEach(function(x){ medidas(k,x.id).forEach(function(m){ todas[x.id].push(m); }); }); });
+    function resumoPA(nome,ms,porDia){
+      if(!ms.length) return "<tr><td class=l>"+nome+"</td><td colspan=6><span class=zz>sem medidas</span></td></tr>";
+      var s=med(ms.map(function(m){return m.s;})), d=med(ms.map(function(m){return m.d;}));
+      var p=med(ms.map(function(m){return m.p;}).filter(Boolean));
+      return "<tr><td class=l>"+nome+"</td><td>"+marcaPA(s,d)+"</td><td>"+v0(p)+"</td><td>"+
+        mm(ms.map(function(m){return m.s;}))+"</td><td>"+mm(ms.map(function(m){return m.d;}))+"</td><td>"+ms.length+"</td><td>"+
+        (porDia.total?porDia.fora+" de "+porDia.total:"—")+"</td></tr>";
+    }
+    function foraPer(ids){ var f=0,t=0; chaves.forEach(function(k){ ids.forEach(function(id){ var m=mediaPA(k,id); if(m){ t++; if(stPA(m.s,m.d)) f++; } }); }); return {fora:f,total:t}; }
+    h+="<h2>Resumo do período</h2><div><h3>Pressão arterial (mmHg)</h3><div class=tw><table><thead><tr>"+
+      "<th class=l>período</th><th>média</th><th>pulso</th><th>sistólica<br>mín–máx</th><th>diastólica<br>mín–máx</th><th>nº de<br>medidas</th><th>médias do dia<br>≥130/80</th></tr></thead><tbody>"+
+      resumoPA("Manhã",todas.manha,foraPer(["manha"]))+resumoPA("Noite",todas.noite,foraPer(["noite"]))+
+      resumoPA("Geral",todas.manha.concat(todas.noite),foraPer(["manha","noite"]))+"</tbody></table></div></div>";
+
+    /* ── resumo glicemia ── */
+    h+="<div><h3 style=\"margin-top:4mm\">Glicemia capilar (mg/dL)</h3><div class=tw><table><thead><tr><th class=l>momento</th><th>média</th><th>mín–máx</th><th>nº</th><th>fora<br>da meta</th></tr></thead><tbody>";
+    GLICEMIA.forEach(function(g){
+      var vs=[]; chaves.forEach(function(k){ var v=glDe(k,g.id); if(v!=null) vs.push(v); });
+      var fora=vs.filter(function(v){ return stGL(v,g.tipo); }).length;
+      h+="<tr><td class=l>"+g.label+"</td>"+(vs.length?"<td>"+marcaGL(med(vs),g.tipo)+"</td><td>"+mm(vs)+"</td><td>"+vs.length+"</td><td>"+fora+"</td>":
+        "<td colspan=4><span class=zz>sem leituras</span></td>")+"</tr>";
+    });
+    h+="</tbody></table></div><div class=sub>"+e.gl.n+" leituras · "+e.gl.hipos+" abaixo de "+lim.hipo+" (hipoglicemia)</div></div>";
+
+    /* ── gráficos ── */
+    var gp=graficoPA(chaves,true), gg=graficoGL(chaves,true);
+    if(gp||gg){
+      h+="<h2>Tendência</h2><div class=duo>";
+      h+=gp?'<div class="chart">'+gp+'<div class="cap">Pressão: linha preta = sistólica, cinza = diastólica (média do dia). Pontos vermelhos: ≥130/80.</div></div>':"<div></div>";
+      h+=gg?'<div class="chart">'+gg+'<div class="cap">Glicemia: linha = jejum; ○ antes de comer, ▪ 2 h depois. Vermelho: fora da meta.</div></div>':"<div></div>";
+      h+="</div>";
+    }
+
+    /* ── pressão: todas as medidas ── */
+    h+="<h2>Pressão arterial — todas as medidas</h2>";
+    var temPA=comDados.some(function(k){ return medidas(k,"manha").length||medidas(k,"noite").length; });
+    if(!temPA) h+='<p class="zz">Sem medidas de pressão no período.</p>';
+    else {
+      h+="<div class=tw><table><thead><tr><th class=l>data</th><th class=l>período</th><th>hora</th><th>sistólica</th><th>diastólica</th><th>pulso</th><th>média do período</th></tr></thead><tbody>";
+      comDados.forEach(function(k){
+        var primeira=true, d=deIso(k);
+        PRESSAO.forEach(function(x){
+          var ms=medidas(k,x.id); if(!ms.length) return;
+          var m=mediaPA(k,x.id);
+          ms.forEach(function(r,ix){
+            h+="<tr"+(primeira?' class="nd"':"")+">"+
+              (primeira?'<td class="l dt">'+curto(k)+"<span>"+SEM[d.getDay()]+"</span></td>":"<td></td>")+
+              "<td class=l>"+(ix===0?x.label:"")+"</td><td>"+(r.t||"—")+"</td><td>"+r.s+"</td><td>"+r.d+"</td><td>"+v0(r.p)+"</td>"+
+              "<td>"+(ix===ms.length-1?(ms.length>1?marcaPA(m.s,m.d)+' <span class="h" style="display:inline">('+ms.length+" medidas)</span>":marcaPA(m.s,m.d)):"")+"</td></tr>";
+            primeira=false;
+          });
+        });
+      });
+      h+="</tbody></table></div>";
+    }
+
+    /* ── glicemia: dia a dia ── */
+    h+="<h2>Glicemia capilar — dia a dia (mg/dL)</h2>";
+    var temGL=comDados.some(function(k){ return GLICEMIA.some(function(g){ return glDe(k,g.id)!=null; }); });
+    if(!temGL) h+='<p class="zz">Sem leituras de glicemia no período.</p>';
+    else {
+      h+="<div class=tw><table><thead><tr><th class=l>data</th>"+GLICEMIA.map(function(g){ return "<th>"+g.label.replace("2 h após o ","2 h após<br>").replace("Antes do ","Antes do<br>")+"</th>"; }).join("")+"</tr></thead><tbody>";
+      comDados.forEach(function(k){
+        if(!GLICEMIA.some(function(g){ return glDe(k,g.id)!=null; })) return;
+        var d=deIso(k);
+        h+='<tr><td class="l dt">'+curto(k)+"<span>"+SEM[d.getDay()]+"</span></td>"+GLICEMIA.map(function(g){
+          var v=glDe(k,g.id), t=horaGl(k,g.id);
+          return "<td>"+(v==null?'<span class="zz">—</span>':marcaGL(v,g.tipo)+(t?'<span class="h">'+t+"</span>":""))+"</td>";
+        }).join("")+"</tr>";
+      });
+      h+="</tbody></table></div>";
+    }
+
+    /* ── anotações ── */
     var notas=chaves.filter(function(k){ return dia(k).nota; });
     if(notas.length){
-      h+="<h2>Anotações</h2>";
-      notas.forEach(function(k){ h+='<div class="fo" style="margin:1mm 0">'+curto(k)+" — "+esc(dia(k).nota)+"</div>"; });
+      h+='<h2>Anotações do paciente</h2><table class="notas"><tbody>';
+      notas.forEach(function(k){ h+='<tr><td class="l dt" style="width:16mm">'+curto(k)+"</td><td class=l>"+esc(dia(k).nota)+"</td></tr>"; });
+      h+="</tbody></table>";
     }
-    h+='<div class="fo">Valores destacados estão fora dos limites usados neste relatório: hipoglicemia abaixo de '+
-      db.limites.hipo+", jejum e antes das refeições até "+db.limites.pre+", duas horas após as refeições até "+
-      db.limites.pos+"; pressão a partir de 130/80, referência para medida residencial. "+
-      "Registro feito em casa pelo paciente; não substitui avaliação médica.</div>";
-    document.getElementById("print").innerHTML=h;
-    setTimeout(function(){ window.print(); },60);
+
+    h+='<div class="obs"><h3>Observações da consulta</h3><div></div><div></div><div></div></div>';
+    h+='<div class="fo"><b>Como ler:</b> valores <span class="mk">sublinhados</span> estão fora das referências usadas — '+
+      "↑ acima, ↓ abaixo, ↑↑ pressão a partir de 180/110. Pressão: média domiciliar a partir de 130/80 mmHg. "+
+      "Glicemia: hipoglicemia abaixo de "+lim.hipo+"; jejum, antes das refeições e ao deitar até "+lim.pre+
+      "; 2 h após as refeições até "+lim.pos+" mg/dL. Medidas feitas em casa pelo paciente; não substituem avaliação médica.</div>";
+    return h;
+  }
+  function imprimir(){
+    var el=document.getElementById("print");
+    el.innerHTML='<div class="rbar"><button data-rel-fechar="1">'+ico("x")+' Fechar</button><b>Relatório</b>'+
+      '<div><button class="pri" data-rel-imprimir="1">'+ico("print")+" Imprimir / PDF</button></div></div>"+
+      '<div class="pg">'+relatorio()+"</div>";
+    el.classList.add("on"); el.scrollTop=0;
+    document.documentElement.classList.add("rel-on");
+  }
+  function fecharRelatorio(){
+    var el=document.getElementById("print");
+    el.classList.remove("on"); el.innerHTML="";
+    document.documentElement.classList.remove("rel-on");
   }
   function exportar(){
     var blob=new Blob([JSON.stringify(db,null,2)],{type:"application/json"});
