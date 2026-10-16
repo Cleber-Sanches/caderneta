@@ -367,12 +367,14 @@ html.rel-on,html.rel-on body{overflow:hidden}
   /* ═══ dados ═══ */
   var KEY="caderneta.v1", PADRAO={hipo:70,pre:100,pos:140};
   var API="/api/caderneta";
+  var semApi=/\.github\.io$/.test(location.hostname); /* GitHub Pages: só armazenamento local */
   var db={ nome:"", limites:Object.assign({},PADRAO), dias:{} };
   var remoto = typeof window.storage!=="undefined" && window.storage;
   var salvando=null;
 
   function carregar(pronto){
     var local=null; try{ local=JSON.parse(localStorage.getItem(KEY)); }catch(e){}
+    if(semApi){ aplicar(local); pronto(); return; }
     fetch(API,{cache:"no-store"}).then(function(r){
       if(!r.ok) throw new Error("api "+r.status);
       return r.json();
@@ -401,6 +403,7 @@ html.rel-on,html.rel-on body{overflow:hidden}
     try{ localStorage.setItem(KEY,JSON.stringify(db)); }catch(e){}
     if(remoto){ try{ window.storage.set(KEY,JSON.stringify(db)); }catch(e){} }
     if(salvando) clearTimeout(salvando);
+    if(semApi) return;
     var enviar=function(){
       fetch(API,{
         method:"PUT",
@@ -712,7 +715,7 @@ html.rel-on,html.rel-on body{overflow:hidden}
       '<div class="cap">Os registros ficam neste aparelho, neste navegador.</div>'+
       '<button class="btn soft" data-exportar="1">'+ico("down")+" Baixar meus dados</button>"+
       '<button class="btn soft" data-importar="1">'+ico("up")+" Restaurar de um arquivo</button>"+
-      '<input type="file" id="arquivo" accept="application/json" style="display:none">'+
+      '<input type="file" id="arquivo" accept="application/json,.json" style="display:none">'+
       '<p class="hintline">Trocando de celular ou limpando os dados do navegador, eles somem. Baixe a cópia de vez em quando.</p></div>';
     h+='<p class="hintline" style="text-align:center;padding:0 10px">Registro para levar à consulta. Não substitui avaliação médica.</p>';
     return h;
